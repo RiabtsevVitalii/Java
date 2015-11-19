@@ -73,8 +73,6 @@ public class BoardComponent extends JComponent {
             }
         }
 
-        System.out.println(count);
-
         if ( count % 2 != 0 ) {
             Barley tmp1 = null;
             Barley tmp2 = null;
@@ -87,14 +85,9 @@ public class BoardComponent extends JComponent {
                     tmp2 = b;
                 }
             }
-            System.out.println("swap");
-            System.out.println(tmp1.getValue());
-            System.out.println(tmp2.getValue());
             swap(tmp1, tmp2);
             checkBarley(tmp1);
             checkBarley(tmp2);
-            System.out.println(tmp1.getValue());
-            System.out.println(tmp2.getValue());
             checkWin();
         }
     }
@@ -105,7 +98,6 @@ public class BoardComponent extends JComponent {
         } else {
             winWord &= ( ~(1 << b.getValue()));
         }
-        System.out.println(Integer.toString(winWord, 16));
     }
 
     public void checkWin() {
