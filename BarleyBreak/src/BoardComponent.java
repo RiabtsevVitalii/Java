@@ -12,8 +12,9 @@ public class BoardComponent extends JComponent {
     private ArrayList<Barley> imageComponents;
     private Barley current;
     private Barley emptyBarley;
-    private Point cursorClickPoint;
     private int winWord = 0;
+    private int dx = 0;
+    private int dy = 0;
 
     public BoardComponent() {
         Image image = getToolkit().getImage("src/images/fifteen1.png");
@@ -139,7 +140,8 @@ public class BoardComponent extends JComponent {
         public void mousePressed(MouseEvent event) {
             current = find(event.getPoint());
             if (current != null) {
-                cursorClickPoint = event.getPoint();
+                dx = event.getX() - current.getX();
+                dy = event.getY() - current.getY();
                 imageComponents.remove(current);
                 imageComponents.add(current);
                 setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
@@ -157,7 +159,6 @@ public class BoardComponent extends JComponent {
                 repaint();
                 setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
             }
-            current = null;
             checkWin();
         }
     }
@@ -172,94 +173,47 @@ public class BoardComponent extends JComponent {
         }
 
         public void mouseDragged(MouseEvent event) {
-            if (current != null) {
+            int route = emptyBarley.getIndex() - current.getIndex();
+
+            if (current != null && (Math.abs(route) == 1 || Math.abs(route) == 4)) {
                 int x = current.getX();
                 int y = current.getY();
 
-                int dx = (int)cursorClickPoint.getX() - current.getX();
-                int dy = (int)cursorClickPoint.getY() - current.getY();
-
-                int route = emptyBarley.getIndex() - current.getIndex();
-
-                if (Math.abs(route) == 1 || Math.abs(route) == 4) {
-
-                    if (route == 1) {
-                        if (((event.getX() - dx) > (emptyBarley.getX() - 75)) && ((event.getX() - dx) < emptyBarley.getX())) {
-                            x = event.getX() - dx;
-                            current.getCurrentPoint().move(x, y);
-                            cursorClickPoint.move(event.getX(), event.getY());
-                        } else if (((event.getX() - dx) <= (emptyBarley.getX() - 75))) {
-                            current.getCurrentPoint().move((emptyBarley.getX() - 75), y);
-                        } else {
-                            current.getCurrentPoint().move(emptyBarley.getX(), y);
-                        }
-
-                        if (emptyBarley.getX()- current.getX() <= 75 / 2) {
-                            emptyBarley.getCurrentPoint().move((emptyBarley.getX() - 75), y);
-                            emptyBarley.setIndex(current.getIndex());
-                            current.setIndex(current.getIndex() + 1);
-                            checkBarley(emptyBarley);
-                            checkBarley(current);
-                        }
-                        
-                    } else if (route == -1) {
-                        if (((event.getX() - dx) < (emptyBarley.getX() + 75)) && ((event.getX() - dx) > emptyBarley.getX())) {
-                            x = event.getX() - dx;
-                            current.getCurrentPoint().move(x, y);
-                            cursorClickPoint.move(event.getX(), event.getY());
-                        } else if (((event.getX() - dx) >= (emptyBarley.getX() + 75))) {
-                            current.getCurrentPoint().move((emptyBarley.getX() + 75), y);
-                        } else {
-                            current.getCurrentPoint().move(emptyBarley.getX(), y);
-                        }
-
-                        if (current.getX() - emptyBarley.getX() <= 75 / 2) {
-                            emptyBarley.getCurrentPoint().move((emptyBarley.getX() + 75), y);
-                            emptyBarley.setIndex(current.getIndex());
-                            current.setIndex(current.getIndex() - 1);
-                            checkBarley(emptyBarley);
-                            checkBarley(current);
-                        }
-                    } else if (route == 4) {
-                        if (((event.getY() - dy) > (emptyBarley.getY() - 75)) && ((event.getY() - dy) < emptyBarley.getY())) {
-                            y = event.getY() - dy;
-                            current.getCurrentPoint().move(x, y);
-                            cursorClickPoint.move(event.getX(), event.getY());
-                        } else if (((event.getY() - dy) <= (emptyBarley.getY() - 75))) {
-                            current.getCurrentPoint().move(x, (emptyBarley.getY() - 75));
-                        } else {
-                            current.getCurrentPoint().move(x, emptyBarley.getY());
-                        }
-
-                        if (emptyBarley.getY()- current.getY() <= 75 / 2) {
-                            emptyBarley.getCurrentPoint().move(x, (emptyBarley.getY() - 75));
-                            emptyBarley.setIndex(current.getIndex());
-                            current.setIndex(current.getIndex() + 4);
-                            checkBarley(emptyBarley);
-                            checkBarley(current);
-                        }
-                    } else if (route == -4) {
-                        if (((event.getY() - dy) < (emptyBarley.getY() + 75)) && ((event.getY() - dy) > emptyBarley.getY())) {
-                            y = event.getY() - dy;
-                            current.getCurrentPoint().move(x, y);
-                            cursorClickPoint.move(event.getX(), event.getY());
-                        } else if (((event.getY() - dy) >= (emptyBarley.getY() + 75))) {
-                            current.getCurrentPoint().move(x, (emptyBarley.getY() + 75));
-                        } else {
-                            current.getCurrentPoint().move(x, emptyBarley.getY());
-                        }
-
-                        if (current.getY() - emptyBarley.getY() <= 75 / 2) {
-                            emptyBarley.getCurrentPoint().move(x, (emptyBarley.getY() + 75));
-                            emptyBarley.setIndex(current.getIndex());
-                            current.setIndex(current.getIndex() - 4);
-                            checkBarley(emptyBarley);
-                            checkBarley(current);
-                        }
+                if (Math.abs(route) == 1) {
+                    if (Math.abs(event.getX() - dx - emptyBarley.getX()) <= 75) {
+                        x = event.getX() - dx;
+                        current.move(x, y);
+                    } else {
+                        current.move((emptyBarley.getX() - (Math.abs(route)/route) * 75), y);
                     }
 
-                    repaint();
+                    if (Math.abs(emptyBarley.getX() - current.getX()) <= 75 / 2) {
+                        emptyBarley.move((emptyBarley.getX() - (Math.abs(route)/route) * 75), y);
+                        emptyBarley.setIndex(current.getIndex());
+                        current.setIndex(current.getIndex() + route);
+                        checkBarley(emptyBarley);
+                        checkBarley(current);
+                    }
+
+                } else {
+                    if (Math.abs(event.getY() - dy - emptyBarley.getY()) <= 75) {
+                        y = event.getY() - dy;
+                        current.move(x, y);
+                    } else {
+                        current.move(x, (emptyBarley.getY() - (Math.abs(route)/route) * 75));
+                    }
+
+                    if (Math.abs(emptyBarley.getY() - current.getY()) <= 75 / 2) {
+                        emptyBarley.move(x, (emptyBarley.getY() - (Math.abs(route)/route) * 75));
+                        emptyBarley.setIndex(current.getIndex());
+                        current.setIndex(current.getIndex() + route);
+                        checkBarley(emptyBarley);
+                        checkBarley(current);
+                    }
                 }
+
+                repaint();
+
             }
         }
     }

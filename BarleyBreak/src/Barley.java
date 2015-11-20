@@ -61,4 +61,8 @@ public class Barley implements Comparable<Barley>{
     public final int compareTo(Barley other) {
         return Integer.compare(this.getIndex(), other.getIndex());
     }
+
+    public void move(int x, int y) {
+        this.currentPoint.move(x, y);
+    }
 }
