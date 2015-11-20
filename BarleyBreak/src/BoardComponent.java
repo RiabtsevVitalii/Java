@@ -33,6 +33,8 @@ public class BoardComponent extends JComponent {
             }
         }
 
+        emptyBarley = imageComponents.get(15);
+
         addMouseListener(new MouseHandler());
         addMouseMotionListener(new MouseMotionHandler());
 
@@ -69,7 +71,6 @@ public class BoardComponent extends JComponent {
                     }
                 }
             } else {
-                emptyBarley = imageComponents.get(i);
                 count += 1 + i / 4;
             }
         }
@@ -114,14 +115,21 @@ public class BoardComponent extends JComponent {
         int currentIndex = first.getIndex();
 
         first.setIndex(second.getIndex());
-        first.getCurrentPoint().move(second.getX(), second.getY());
+        first.move(second.getX(), second.getY());
 
         second.setIndex(currentIndex);
-        second.getCurrentPoint().move(curentX, curentY);
+        second.move(curentX, curentY);
     }
 
     public void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4 ; j++) {
+                int x = i * 75;
+                int y = j * 75;
+                g2.drawImage(emptyBarley.getImage(), x, y, this);
+            }
+        }
         for (Barley b : imageComponents) {
             g2.drawImage(b.getImage(), b.getX(), b.getY(), this);
         }
