@@ -1,11 +1,10 @@
-package src;
-
 import java.awt.*;
 import java.awt.geom.*;
 import java.awt.event.*;
 import java.awt.image.*;
-import java.awt.font.*;
+import javax.imageio.ImageIO;
 import javax.swing.*;
+import java.io.IOException;
 import java.util.*;
 
 public class BoardComponent extends JComponent {
@@ -16,11 +15,17 @@ public class BoardComponent extends JComponent {
     private int dx = 0;
     private int dy = 0;
     private int route = 0;
+    private Image image;
 
     public BoardComponent() {
-        Image image = getToolkit().getImage("src/images/fifteen1.png");
+        String path = "/fifteen1.png";
+        try {
+            image = ImageIO.read(getClass().getResource(path));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-        imageComponents = new ArrayList<>();
+        imageComponents = new ArrayList<Barley>();
 
         for (int j = 0, index = 0; j < 4; j++) {
             for (int i = 0; i < 4; i++, index ++) {
